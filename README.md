@@ -36,6 +36,7 @@
 ```text
 liquid-metal-laptops/
 ├── index.html                 # 站点入口（自包含：内联 CSS/JS + 内嵌数据）
+├── favicon.svg                # 站点图标
 ├── data/
 │   └── products.json          # 最终数据集（构建产物 / 可下载）
 ├── sources/                   # 原始素材（公开）
