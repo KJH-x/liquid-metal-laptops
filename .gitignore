@@ -1,0 +1,25 @@
+# 系统/编辑器
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Node
+node_modules/
+
+# 构建/日志
+dist/
+*.log
+*.local
+
+# Cloudflare / Wrangler
+.wrangler/
+.dev.vars
+
+# 本地敏感配置
+.env
+.env.*

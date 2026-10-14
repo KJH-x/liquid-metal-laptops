@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>中国大陆笔记本液金产品查询</title>
+<style>
+:root{
+  --bg:#e9edf3; --panel:#ffffff; --ink:#0d1526; --muted:#59616f;
+  --line:#b6c1d1; --line2:#0d1526;            /* line=结构边框(柔和), line2=强分隔 */
+  --accent:#1d4ed8; --accent2:#4338ca; --headbg:#0d1526; --headbg2:#4338ca;
+  --hover:#dbe4ff; --hoverink:#0d1526;        /* 悬停高亮底色 */
+  --ok:#0c8f4e; --okbg:#d8f3e3; --warn:#b06a00; --warnbg:#ffedcc; --danger:#c81e1e; --dangerbg:#ffdcdc;
+  --ext:#5b6472; --extbg:#e4e7ec; --chip:#e6ecff; --chipink:#132a72;
+  --mark:#ffe14d;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#080b12; --panel:#111826; --ink:#e8edf5; --muted:#93a0b4;
+    --line:#2b3852; --line2:#8fa0ba;
+    --accent:#3b82f6; --accent2:#6366f1; --headbg:#1b2536; --headbg2:#3730a3;
+    --hover:#1c2942; --hoverink:#e8edf5;
+    --ok:#25c26e; --okbg:#0f3324; --warn:#f5a524; --warnbg:#3a2a08; --danger:#f05252; --dangerbg:#3a1414;
+    --ext:#93a0b4; --extbg:#1c2536; --chip:#1b2748; --chipink:#cdd9ff; --mark:#7a5d00; }
+}
+*{box-sizing:border-box;border-radius:0}
+html{scrollbar-gutter:stable}
+body{overflow-y:scroll}
+*{scrollbar-width:thin;scrollbar-color:var(--accent) var(--bg)}
+::-webkit-scrollbar{width:12px;height:12px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--accent)}
+::-webkit-scrollbar-thumb:hover{background:var(--accent2)}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:"Inter","Segoe UI","PingFang SC","Microsoft YaHei",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+/* 除输入框与商品卡片外，禁止划词 */
+body{-webkit-user-select:none;user-select:none}
+#q,.card,.card *{-webkit-user-select:text;user-select:text}
+.wrap{max-width:1240px;margin:0 auto;padding:20px 16px 70px}
+
+/* header */
+header.top{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px;border-bottom:4px solid var(--accent);padding-bottom:10px}
+h1{font-size:24px;margin:0;letter-spacing:.2px;text-transform:uppercase;font-weight:900}
+h1:hover{color:var(--accent)}
+.sub{color:var(--muted);font-size:12.5px;font-weight:600}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 16px}
+.stat{background:var(--panel);padding:7px 14px;font-size:12.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.stat b{color:var(--ink);font-size:14px}
+
+/* panel + search */
+.panel{background:var(--panel);border:2px solid var(--line);padding:14px 14px 12px}
+.searchbox{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border:2px solid var(--line);padding:8px 10px;background:var(--panel);
+  transition:border-color .09s linear}
+.searchbox:focus-within{border-color:var(--accent);box-shadow:6px 6px 0 var(--accent)}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;padding:4px 6px 4px 10px;
+  font-size:13px;font-weight:800;letter-spacing:.2px;transition:background-color .06s linear}
+.chip:hover{background:var(--accent2)}
+.chip.neg{background:var(--danger)}
+.chip.neg:hover{background:#a31616}
+.chip .x{cursor:pointer;border:none;background:transparent;color:inherit;font-size:14px;line-height:1;padding:2px 5px;font-weight:900;
+  transition:background-color .06s linear}
+.chip .x:hover{background:rgba(255,255,255,.35)}
+#q{flex:1;min-width:180px;border:none;outline:none;background:transparent;color:var(--ink);font-size:15px;padding:6px 4px;font-weight:600}
+.toolbar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:12px}
+.seg{display:inline-flex;border:2px solid var(--line)}
+.seg button{border:none;background:var(--panel);color:var(--ink);padding:6px 16px;font-size:13px;cursor:pointer;font-weight:800;
+  letter-spacing:.3px;transition:background-color .06s linear,color .06s linear}
+.seg button+button{border-left:2px solid var(--line)}
+.seg button.on{background:var(--accent);color:#fff}
+.seg button:hover{background:var(--hover);color:var(--ink)}
+.seg button.on:hover{background:var(--accent2);color:#fff}
+.switch{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer;user-select:none;font-weight:700}
+.switch:hover{color:var(--ink)}
+.switch input{display:none}
+.track{width:42px;height:22px;background:var(--panel);border:2px solid var(--line);position:relative;transition:background-color .08s linear,border-color .08s linear}
+.track::after{content:"";position:absolute;top:1px;left:1px;width:16px;height:16px;background:var(--muted);transition:transform .08s linear,background-color .08s linear}
+.switch:hover .track{border-color:var(--accent)}
+.switch input:checked + .track{background:var(--accent);border-color:var(--accent)}
+.switch input:checked + .track::after{transform:translateX(20px);background:#fff}
+.hint{color:var(--muted);font-size:12.5px;margin-top:12px;line-height:1.7;display:flex;flex-wrap:wrap;gap:8px 20px;font-weight:600}
+.hint-item{display:inline-flex;align-items:center;gap:6px}
+.hint-item em{font-style:normal;color:var(--ink)}
+.hint-item i{font-style:normal;color:var(--muted)}
+.hint-item .cx{color:var(--danger);font-weight:900}
+kbd{background:var(--line);color:var(--ink);padding:1px 6px;font-size:11.5px;font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:800}
+.suggest{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+.suggest button{border:2px solid var(--line);background:var(--panel);color:var(--ink);padding:3px 10px;font-size:12px;cursor:pointer;font-weight:700;
+  transition:background-color .06s linear,color .06s linear,border-color .06s linear}
+.suggest button:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* results tree */
+.results{margin-top:18px}
+.brand{background:var(--panel);margin-bottom:16px;overflow:hidden;animation:slidein .12s ease-out}
+@keyframes slidein{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.brand>.bhead{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;user-select:none;
+  background:var(--headbg);color:#fff;border-left:8px solid var(--accent);
+  transition:background-color .08s linear,padding-left .08s linear}
+.brand>.bhead:hover{background:var(--accent);padding-left:18px}
+.brand>.bhead .caret{color:#fff;font-size:12px;transition:transform .08s linear}
+.brand.collapsed>.bhead .caret{transform:rotate(-90deg)}
+.brand.collapsed>.bbody{display:none}
+.bbody{padding:10px 0 4px}
+.bhead .bname{font-weight:900;font-size:16px;letter-spacing:.4px;text-transform:uppercase}
+.bhead .bbrand{color:#c7d2fe;font-size:12px;font-weight:700;letter-spacing:.5px}
+.brand>.bhead:hover .bbrand{color:#e8efff}
+.bhead .bcount{margin-left:auto;background:var(--accent);color:#fff;padding:2px 11px;font-size:12px;font-weight:900;
+  transition:background-color .08s linear}
+.brand>.bhead:hover .bcount{background:var(--panel);color:var(--accent)}
+
+.sub{margin:8px 0 8px 14px;overflow:hidden;background:var(--bg)}
+.sub>.shead{display:flex;align-items:center;gap:10px;padding:8px 14px 8px 12px;cursor:pointer;user-select:none;
+  background:var(--headbg2);color:#fff;border-left:6px solid var(--accent);
+  transition:background-color .08s linear,padding-left .08s linear}
+.sub>.shead:hover{background:var(--accent);padding-left:16px}
+.sub>.shead .caret{color:#fff;font-size:12px;transition:transform .08s linear}
+.sub.collapsed>.shead .caret{transform:rotate(-90deg)}
+.sub.collapsed>.sbody{display:none}
+.sbody{padding:6px 0 2px}
+.shead .sname{font-weight:900;font-size:14px;letter-spacing:.3px;text-transform:uppercase}
+.shead .scount{margin-left:auto;background:rgba(255,255,255,.22);color:#fff;padding:2px 10px;font-size:11.5px;font-weight:900;
+  transition:background-color .08s linear}
+.sub>.shead:hover .scount{background:#fff;color:var(--accent)}
+
+.group{background:var(--panel);border:2px solid var(--line);margin:0 0 8px 14px;overflow:hidden}
+.group>.ghead{display:flex;align-items:center;gap:10px;padding:9px 12px 9px 12px;cursor:pointer;user-select:none;background:var(--chip);
+  border-left:6px solid var(--accent);transition:background-color .08s linear,color .08s linear}
+.group>.ghead:hover{background:var(--accent);color:#fff}
+.ghead .caret{color:inherit;font-size:12px;transition:transform .08s linear}
+.group.collapsed .caret{transform:rotate(-90deg)}
+.group.collapsed .gbody{display:none}
+.ghead .gname{font-weight:800;font-size:14.5px}
+.ghead .gcount{margin-left:auto;background:var(--muted);color:#fff;padding:2px 10px;font-size:12px;font-weight:900;
+  transition:background-color .08s linear,color .08s linear}
+.group>.ghead:hover .gcount{background:#fff;color:var(--accent)}
+.gbody{padding:2px 10px 10px 10px;display:grid;gap:8px}
+
+/* cards: color-coded left bar by status (static, non-interactive) */
+.card{border:2px solid var(--line);border-left-width:8px;border-left-color:var(--ext);padding:11px 12px;background:var(--panel)}
+.card.status-confirmed{border-left-color:var(--ok)}
+.card.status-pending{border-left-color:var(--warn)}
+.card.status-excluded{border-left-color:var(--danger)}
+.card.status-external{border-left-color:var(--ext)}
+.card .row1{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.card .nm{font-weight:900;font-size:15px;letter-spacing:.2px}
+.card .en{color:var(--muted);font-size:12.5px;font-weight:600}
+.badge{font-size:11.5px;padding:2px 9px;font-weight:900;letter-spacing:.3px;color:#fff;background:var(--ext)}
+.badge.b-confirmed{background:var(--ok)}
+.badge.b-pending{background:var(--warn)}
+.badge.b-excluded{background:var(--danger)}
+.badge.b-external{background:var(--ext)}
+.badge.b-grade{background:var(--chip);color:var(--chipink)}
+.badge.b-cond{background:var(--headbg2);color:#fff}
+.badge.b-fuzzy{background:var(--warn)}
+.badge.b-tier{background:var(--extbg);color:var(--muted)}
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:7px;color:var(--muted);font-size:12.5px;font-weight:600}
+.meta b{color:var(--ink);font-weight:900}
+.gpu{background:var(--accent);color:#fff;padding:1px 8px;font-weight:900}
+.note{margin-top:7px;font-size:12.8px;color:var(--muted);line-height:1.65}
+.links{margin-top:8px;display:flex;flex-wrap:wrap;gap:8px}
+.links a{font-size:12px;background:var(--panel);border:2px solid var(--line);padding:3px 9px;font-weight:700;color:var(--ink);
+  transition:background-color .06s linear,color .06s linear,border-color .06s linear}
+.links a:hover{background:var(--accent);color:#fff;border-color:var(--accent);text-decoration:none}
+mark{background:var(--mark);color:inherit;padding:0 2px}
+.empty{text-align:center;color:var(--muted);padding:60px 10px;font-size:14px;font-weight:700;border:2px dashed var(--line)}
+.footer{margin-top:28px;color:var(--muted);font-size:12px;line-height:1.8;border-top:2px solid var(--line);padding-top:10px;font-weight:600}
+
+/* 计数框：跨层级/跨项目右对齐 + 固定 3 位数宽度（防跳动）
+   对齐由各处 padding-right 补偿边框/缩进实现（见 bhead/shead/ghead 的 padding） */
+.bhead .bcount,.shead .scount,.ghead .gcount{flex:0 0 auto;box-sizing:border-box;width:52px;text-align:center;
+  font-variant-numeric:tabular-nums;padding-left:0;padding-right:0}
+
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>中国大陆笔记本液金产品查询</h1>
+    <span class="sub" id="subtitle"></span>
+  </header>
+  <div class="stats" id="stats"></div>
+
+  <div class="panel">
+    <div class="searchbox" id="searchbox">
+      <input id="q" type="text" autocomplete="off" spellcheck="false"
+             placeholder="输入筛选条件：型号/底壳代码/GPU/CPU/系列/年款/来源… 回车或空格添加关键词">
+    </div>
+    <div class="toolbar">
+      <div class="seg" id="boolseg">
+        <button data-v="AND" class="on">AND 与</button>
+        <button data-v="OR">OR 或</button>
+      </div>
+      <div class="seg" id="strictseg" title="确凿消息＝仅确定项；旁证消息＝含待核/模糊项">
+        <button data-v="loose" class="on">旁证消息</button>
+        <button data-v="strict">确凿消息</button>
+      </div>
+      <span class="sub" id="count"></span>
+    </div>
+    <div class="hint">
+      <span class="hint-item"><kbd>回车</kbd><kbd>空格</kbd><em>添加关键词</em></span>
+      <span class="hint-item"><b class="cx">×</b><em>清除气泡</em></span>
+      <span class="hint-item"><kbd>Backspace</kbd><em>空输入连按两次删除上一个</em></span>
+      <span class="hint-item"><kbd>Ctrl</kbd><i>+</i><kbd>A</kbd><em>不选中</em></span>
+      <span class="hint-item"><kbd>-</kbd><kbd>!</kbd><em>前缀表示排除</em></span>
+      <span class="hint-item"><kbd>*</kbd><em>通配，如 RTX20*</em></span>
+    </div>
+    <div class="suggest" id="suggest"></div>
+  </div>
+
+  <div class="results" id="results"></div>
+
+  <div class="footer" id="footer"></div>
+</div>
+
+<script id="app-data" type="application/json">__DATA_JSON__</script>
+<script>
+(function(){
+  "use strict";
+  const DATA = JSON.parse(document.getElementById('app-data').textContent);
+  const P = DATA.products;
+
+  // ---------- normalization ----------
+  function nfkc(x){ return (x==null?'':String(x)).normalize('NFKC'); }
+  function norm(x){
+    let s = nfkc(x).toLowerCase();
+    s = s.replace(/[（）()\[\]【】{}]/g,' ');
+    s = s.replace(/[，,、]/g,' ');
+    s = s.replace(/[＋]/g,'+');
+    s = s.replace(/\s+/g,' ');
+    return s.trim();
+  }
+  function stripAll(x){ return norm(x).replace(/\s+/g,''); }
+
+  // synonyms: zh -> extra searchable en / aliases
+  const SYN = {
+    "枪神":"strix scar","魔霸":"strix g","冰刃":"zephyrus s","幻":"zephyrus flow",
+    "幻x":"flow z13","天选":"tuf","拯救者":"legion","游匣":"dell g",
+    "暗影精灵":"omen","掠夺者":"predator","战斧":"helios","刀锋":"triton",
+    "擎":"nitro","强袭":"raider","绝影":"stealth","曙光":"machenike dawn",
+    "华硕":"asus","联想":"lenovo","戴尔":"dell","微星":"msi","惠普":"hp",
+    "宏碁":"acer","机械革命":"mechrevo","机械师":"machenike","雷神":"thunderobot",
+    "探索版":"explorer","至尊版":"ultimate","超竞版":"super","超能版":"extreme",
+    "双屏":"duo","翻转":"flip","核显":"integrated"
+  };
+
+  // ---------- build per-product haystack ----------
+  const ITEMS = P.map((p, i) => {
+    const primary = [
+      p.name.zh, p.name.en, p.brand.zh, p.brand.en, p.series_en,
+      (p.category_path||[]).join(' '), p.sku_raw, p.sku_code, (p.code_aliases||[]).join(' '),
+      p.year, (p.variants||[]).map(v=>v.gpu+' '+(v.cpu||'')+' '+(v.gpu_pattern||'')).join(' '),
+      p.liquid_metal ? (p.liquid_metal.type+' '+(p.liquid_metal.target||'')) : '',
+      (p.source_codes||[]).join(' '),
+      p.pinyin ? (p.pinyin.full + ' ' + p.pinyin.initials) : '',
+      p.verification ? (p.verification.status+' '+p.verification.grade) : ''
+    ];
+    const loose = [
+      p.verification ? (p.verification.conclusion||'') : '', p.note,
+      (p.references||[]).map(r=>(r.code||'')+' '+(r.url||'')).join(' ')
+    ];
+    let hp = norm(primary.join(' \u0001 '));
+    const extra = [];
+    for (const k in SYN){ if (hp.indexOf(k) !== -1) extra.push(SYN[k]); }
+    if (extra.length) hp += ' ' + norm(extra.join(' '));
+    const hl = norm(loose.join(' \u0001 '));
+    return { p: p, i: i, hayCompact: hp.replace(/\s+/g,''), looseCompact: hl.replace(/\s+/g,'') };
+  });
+
+  // ---------- grouping ----------
+  function brandKey(p){ return p.brand ? (p.brand.zh || p.brand.en || '未分类') : '未分类'; }
+  function seriesName(p){ const cp = p.category_path || []; return cp.length > 1 ? cp[1] : (cp[0] || '未分类'); }
+  function matchText(tok, text){
+    const rx = tokenRegex(tok); if(!rx) return false;
+    return rx.test(norm(text).replace(/\s+/g,''));
+  }
+  function anyMatch(toks, cards){
+    return toks.some(t => t && cards.some(c => c && matchText(t, c)));
+  }
+  function brandMatched(p, toks){
+    const b = p.brand || {}; const pin = p.pinyin || {};
+    return anyMatch(toks, [b.zh, b.en, pin.brand_full, pin.brand_initials]);
+  }
+  function seriesMatched(p, toks){
+    const pin = p.pinyin || {};
+    return anyMatch(toks, [seriesName(p), pin.series_full, pin.series_initials]);
+  }
+  // 厂商(父品牌) → 子品牌
+  const PARENT = {"华硕 ROG":"华硕 ASUS","华硕 ProArt":"华硕 ASUS","华硕 Zenbook":"华硕 ASUS",
+                  "联想 拯救者":"联想 Lenovo","联想 ThinkPad":"联想 Lenovo"};
+  const SUBNAME = {"华硕 ROG":"ROG","华硕 ProArt":"ProArt","华硕 Zenbook":"Zenbook",
+                   "联想 拯救者":"拯救者","联想 ThinkPad":"ThinkPad"};
+  const FAMALIAS = {"华硕 ASUS":["华硕","asus","huashuo"],"联想 Lenovo":["联想","lenovo","lianxiang"]};
+  function familyKey(p){ const b = brandKey(p); return PARENT[b] || b; }
+  function subName(b){ return SUBNAME[b] || b; }
+  function famEn(fam, p0){
+    if(fam === "华硕 ASUS") return "ASUS";
+    if(fam === "联想 Lenovo") return "Lenovo";
+    return (p0.brand && p0.brand.en) || "";
+  }
+  function famMatched(fam, p0, toks){
+    const cards = (FAMALIAS[fam] || [fam]).concat([fam]);
+    return anyMatch(toks, cards);
+  }
+  // 排序优先级：确认(绿) → 疑似(黄) → 否定(红)
+  function statusRank(p){
+    const s = (p.verification && p.verification.status) || '';
+    return s === 'confirmed' ? 0 : (s === 'pending' || s === 'external') ? 1 : s === 'excluded' ? 2 : 3;
+  }
+  function itemsStats(items){
+    let minRank = 9, conf = 0;
+    items.forEach(it=>{ const r = statusRank(it.p); if (r < minRank) minRank = r; if (r === 0) conf++; });
+    return { minRank: minRank, conf: conf, total: items.length };
+  }
+  function cmpItems(ai, bi){
+    const a = itemsStats(ai), b = itemsStats(bi);
+    return (a.minRank - b.minRank) || (b.conf - a.conf) || (b.total - a.total);
+  }
+
+  // ---------- token -> regex ----------
+  function tokenRegex(tok){
+    let t = stripAll(tok);
+    // wildcard
+    let rx = '';
+    for (const ch of t){
+      if (ch==='*') rx += '.*';
+      else if (ch==='?') rx += '.';
+      else rx += ch.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    }
+    try { return new RegExp(rx, 'i'); } catch(e){ return null; }
+  }
+  function isGpuLike(tok){
+    const t = stripAll(tok);
+    return /(rtx|gtx|rx|radeon|geforce|arc)/.test(t) || /^\d{3,4}$/.test(t);
+  }
+  function matchItem(it, tok){
+    const rx = tokenRegex(tok); if(!rx) return false;
+    if (rx.test(it.hayCompact)) return true;
+    // GPU 类关键词只认精确字段，避免备注里提到其它 GPU 造成误命中
+    if (!isGpuLike(tok) && it.looseCompact && rx.test(it.looseCompact)) return true;
+    return false;
+  }
+
+  function strictOk(p){
+    if (p.verification && p.verification.status !== 'confirmed') return false;
+    if (p.fuzzy_fields && p.fuzzy_fields.length) return false;
+    return true;
+  }
+
+  // ---------- state ----------
+  const state = { chips: [], input: '', bool: 'AND', strict: false };
+
+  const elQ = document.getElementById('q');
+  const elChipsHolder = document.getElementById('searchbox');
+  const elResults = document.getElementById('results');
+  const elCount = document.getElementById('count');
+  const elSuggest = document.getElementById('suggest');
+  const elStats = document.getElementById('stats');
+  const elSubtitle = document.getElementById('subtitle');
+  const elFooter = document.getElementById('footer');
+
+  // ---------- evaluate ----------
+  function evaluate(){
+    const pos = [], neg = [];
+    state.chips.forEach(c => (c.neg?neg:pos).push(c.text));
+    if (state.input.trim()) pos.push(state.input.trim().replace(/^[-!]/,''));
+    // if input starts with - treat as neg preview
+    if (/^[-!]/.test(state.input.trim())){
+      pos.pop(); neg.push(state.input.trim().replace(/^[-!]/,''));
+    }
+
+    let sets = ITEMS.filter(it => {
+      if (state.strict && !strictOk(it.p)) return false;
+      return true;
+    });
+
+    function apply(tokens, mode){
+      if (!tokens.length) return sets;
+      if (mode === 'OR'){
+        return sets.filter(it => tokens.some(t => matchItem(it, t)));
+      }
+      return sets.filter(it => tokens.every(t => matchItem(it, t)));
+    }
+    let res = apply(pos, state.bool);
+    if (neg.length){
+      res = res.filter(it => !neg.some(t => matchItem(it, t)));
+    }
+    return res;
+  }
+
+  // ---------- highlight ----------
+  function hl(text, tokens){
+    text = (text==null?'':String(text));
+    if (!tokens || !tokens.length) return escapeHtml(text);
+    let out = escapeHtml(text);
+    // build combined regex over tokens (escaped, wildcard-aware)
+    const parts = [];
+    tokens.forEach(t=>{
+      let tt = stripAll(t);
+      if (!tt) return;
+      let rx='';
+      for (const ch of tt){ rx += ch==='*'?'.*' : ch==='?'?'.' : ch.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+      if (rx) parts.push(rx);
+    });
+    if (!parts.length) return out;
+    try{
+      const re = new RegExp('('+parts.join('|')+')','gi');
+      out = out.replace(re, '<mark>$1</mark>');
+    }catch(e){}
+    return out;
+  }
+  function escapeHtml(s){ s = (s==null?'':String(s)); return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  // ---------- render ----------
+  function activeTokens(){ return state.chips.map(c=>c.text).filter(Boolean); }
+
+  function render(){
+    const res = evaluate();
+    const toks = activeTokens().concat(state.input.trim()? [state.input.trim().replace(/^[-!]/,'')]:[]);
+    const hasQuery = toks.length > 0;
+    elCount.textContent = res.length + ' 条结果';
+    renderChips();
+
+    if (!res.length){
+      elResults.innerHTML = '<div class="empty">没有匹配结果。试试删除部分关键词，或关闭严格模式。</div>';
+      renderSuggest();
+      return;
+    }
+    // 厂商 → 子品牌 → 系列 三级折叠
+    const fams = new Map();   // family -> brand -> series -> items
+    res.forEach(it=>{
+      const fam = familyKey(it.p), b = brandKey(it.p), s = seriesName(it.p);
+      if(!fams.has(fam)) fams.set(fam, new Map());
+      const bm = fams.get(fam);
+      if(!bm.has(b)) bm.set(b, new Map());
+      const sm = bm.get(b);
+      if(!sm.has(s)) sm.set(s, []);
+      sm.get(s).push(it);
+    });
+    const itemsOf = (bm)=> [...bm.values()].flatMap(m=>[...m.values()]).flat();
+    const famArr = [...fams.entries()].sort((a,b)=> cmpItems(itemsOf(a[1]), itemsOf(b[1])) || a[0].localeCompare(b[0],'zh'));
+    let html = '';
+    famArr.forEach(([fam, bm])=>{
+      const famItems=itemsOf(bm);
+      const p0=famItems[0].p;
+      const subArr=[...bm.entries()].sort((a,b)=>{
+        const ai=[...a[1].values()].flat(), bi=[...b[1].values()].flat();
+        return cmpItems(ai, bi) || a[0].localeCompare(b[0],'zh');
+      });
+      const seriesOpen = (list)=> seriesMatched(list[0].p, toks);
+      const anySeries = subArr.some(([b,sm])=> [...sm.values()].some(seriesOpen));
+      const anySub = subArr.some(([b,sm])=> sm.size && brandMatched(sm.values().next().value[0].p, toks));
+      const famOpen = famMatched(fam, p0, toks) || anySub || anySeries || (hasQuery && subArr.length === 1);
+      html += '<div class="brand'+(famOpen?'':' collapsed')+'" data-single="'+(subArr.length===1?1:0)+'"><div class="bhead">'
+        + '<span class="caret">▼</span><span class="bname">'+escapeHtml(fam)+'</span>'
+        + '<span class="bbrand">'+escapeHtml(famEn(fam,p0))+'</span>'
+        + '<span class="bcount">'+famItems.length+'</span></div><div class="bbody">';
+      subArr.forEach(([b, sm])=>{
+        const subItems=[...sm.values()].flat();
+        const sp=subItems[0].p;
+        const isSub = (b !== fam);
+        const sArr=[...sm.entries()].sort((a,b2)=> cmpItems(a[1], b2[1]) || a[0].localeCompare(b2[0],'zh'));
+        const subSeriesOpen = sArr.some(([s0, l0])=> seriesMatched(l0[0].p, toks));
+        let bodyOpen = true;
+        if (isSub){
+          const subOpen = brandMatched(sp, toks) || subSeriesOpen || (hasQuery && sArr.length === 1);
+          html += '<div class="sub'+(subOpen?'':' collapsed')+'" data-single="'+(sArr.length===1?1:0)+'"><div class="shead">'
+            + '<span class="caret">▼</span><span class="sname">'+escapeHtml(subName(b))+'</span>'
+            + '<span class="bbrand">'+escapeHtml(sp.brand.en||'')+'</span>'
+            + '<span class="scount">'+subItems.length+'</span></div><div class="sbody">';
+        }
+        sArr.forEach(([s, list])=>{
+          const sOpen = seriesMatched(list[0].p, toks) || (hasQuery && sArr.length === 1);
+          html += '<div class="group'+(sOpen?'':' collapsed')+'" data-single="'+(sArr.length===1?1:0)+'"><div class="ghead">'
+            + '<span class="caret">▼</span><span class="gname">'+escapeHtml(s)+'</span>'
+            + '<span class="gcount">'+list.length+'</span></div><div class="gbody">';
+          list.sort((a,b2)=> (statusRank(a.p)-statusRank(b2.p)) || (String(a.p.year).localeCompare(String(b2.p.year))) || a.p.name.zh.localeCompare(b2.p.name.zh,'zh'));
+          list.forEach(it=> html += card(it.p, toks));
+          html += '</div></div>';
+        });
+        if (isSub) html += '</div></div>';
+      });
+      html += '</div></div>';
+    });
+    elResults.innerHTML = html;
+    // 展开时级联：沿“单子节点”链路自动逐级展开（不跨其他分支）
+    function cascadeExpand(node){
+      let child = null;
+      if (node.classList.contains('brand')){
+        const subs = node.querySelectorAll(':scope > .bbody > .sub');
+        const grps = node.querySelectorAll(':scope > .bbody > .group');
+        if (subs.length === 1 && grps.length === 0) child = subs[0];
+        else if (grps.length === 1 && subs.length === 0) child = grps[0];
+      } else if (node.classList.contains('sub')){
+        const grps = node.querySelectorAll(':scope > .sbody > .group');
+        if (grps.length === 1) child = grps[0];
+      }
+      if (child){ child.classList.remove('collapsed'); cascadeExpand(child); }
+    }
+    elResults.querySelectorAll('.bhead, .shead').forEach(h=> h.addEventListener('click', ()=>{
+      const node = h.parentElement;
+      const willExpand = node.classList.contains('collapsed');
+      node.classList.toggle('collapsed');
+      if (willExpand) cascadeExpand(node);
+    }));
+    elResults.querySelectorAll('.ghead').forEach(h=> h.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const node = h.parentElement;
+      const willExpand = node.classList.contains('collapsed');
+      node.classList.toggle('collapsed');
+      if (willExpand) cascadeExpand(node);
+    }));
+    renderSuggest();
+  }
+
+  function statusBadge(p){
+    const st = p.verification ? p.verification.status : '';
+    const map = {confirmed:['已确认','b-confirmed'], pending:['待核实','b-pending'],
+                 excluded:['排除/无液金','b-excluded'], external:['外部未验证','b-external']};
+    const m = map[st] || [st||'—','b-grade'];
+    let s = '<span class="badge '+m[1]+'">'+m[0]+'</span>';
+    if (p.tier) s += '<span class="badge b-tier">'+escapeHtml(p.tier)+'</span>';
+    if (p.verification && p.verification.grade) s += '<span class="badge b-grade">证据 '+escapeHtml(p.verification.grade)+'</span>';
+    if (p.verification && p.verification.conditional) s += '<span class="badge b-cond">附条件支持</span>';
+    if (p.fuzzy_fields && p.fuzzy_fields.indexOf('gpu')>=0) s += '<span class="badge b-fuzzy">GPU 字段模糊·按可疑纳入</span>';
+    return s;
+  }
+
+  function card(p, toks){
+    const v = (p.variants && p.variants[0]) || {};
+    const lm = p.liquid_metal || {};
+    const links = (p.references||[]).filter(r=>r.url && /^https?:/.test(r.url)).slice(0,5)
+      .map(r=> '<a href="'+escapeHtml(r.url)+'" target="_blank" rel="noopener">'+escapeHtml(r.id||'来源')+(r.grade?'·'+escapeHtml(r.grade):'')+' ↗</a>').join('');
+    let extra = '';
+    const st0 = (p.verification && p.verification.status) || '';
+    const bodyTxt = p.note || (p.verification && p.verification.basis) || '';
+    if (bodyTxt) extra += '<div class="note">' + (st0 === 'pending' ? '<b>待核原因：</b>' : '') + hl(bodyTxt, toks) + '</div>';
+    if (p.verification && p.verification.overrides && p.verification.overrides.length)
+      extra += '<div class="note">已修订：'+escapeHtml(p.verification.overrides.join('；'))+'</div>';
+
+    return '<div class="card status-'+((p.verification&&p.verification.status)||'')+'">'
+      + '<div class="row1"><span class="nm">'+hl(p.name.zh,toks)+'</span>'
+      + (p.name.en?'<span class="en">'+hl(p.name.en,toks)+'</span>':'')+ statusBadge(p) +'</div>'
+      + '<div class="meta">'
+      + (v.gpu?'<span class="gpu">'+hl(v.gpu,toks)+'</span>':'')
+      + (v.cpu?'<span>CPU <b>'+hl(v.cpu,toks)+'</b></span>':'')
+      + '<span>年款 <b>'+escapeHtml(p.year||'—')+'</b></span>'
+      + '<span>代码 <b>'+hl(p.sku_raw||p.sku_code||'—',toks)+'</b></span>'
+      + '<span>液金 <b>'+hl(lm.type||'—',toks)+'</b>'+(lm.target?'（'+hl(lm.target,toks)+'）':'')+'</span>'
+      + '</div>'
+      + extra
+      + (links?'<div class="links">'+links+'</div>':'')
+      + '</div>';
+  }
+
+  // ---------- chips ----------
+  function renderChips(){
+    elChipsHolder.querySelectorAll('.chip').forEach(c=>c.remove());
+    const frag = document.createDocumentFragment();
+    state.chips.forEach((c, idx)=>{
+      const d = document.createElement('span');
+      d.className = 'chip' + (c.neg?' neg':'');
+      d.innerHTML = '<span>'+escapeHtml((c.neg?'-':'')+c.text)+'</span>';
+      const x = document.createElement('button');
+      x.className='x'; x.type='button'; x.textContent='×'; x.title='移除';
+      x.addEventListener('click', (e)=>{ e.stopPropagation(); state.chips.splice(idx,1); render(); });
+      d.appendChild(x);
+      elChipsHolder.insertBefore(d, elQ);
+    });
+  }
+
+  function addChip(text){
+    text = (text||'').trim();
+    if (!text) return;
+    text.split(/\s+/).forEach(tok=>{
+      if (!tok) return;
+      let neg = false, t = tok;
+      if (/^[-!]/.test(t)){ neg = true; t = t.replace(/^[-!]/,''); }
+      if (t) state.chips.push({text: t, neg: neg});
+    });
+    state.input=''; elQ.value='';
+    render();
+  }
+
+  // ---------- suggestions ----------
+  const SUGGEST = (function(){
+    const set = new Set();
+    P.forEach(p=>{
+      (p.category_path||[]).forEach(n=>{ if(n && n.length<=14) set.add(n); });
+      if (p.sku_code) set.add(p.sku_code);
+      (p.variants||[]).forEach(v=>{ if(v.gpu) set.add(v.gpu); });
+    });
+    return [...set];
+  })();
+  function renderSuggest(){
+    const q = norm(state.input);
+    if (!q){ // show a few common series
+      const common = ['拯救者','枪神','魔霸','幻16 Air','ProArt 创16','Alienware x16','掠夺者 战斧16','RTX 4080','RTX 4090','液金'];
+      elSuggest.innerHTML = common.map(c=>'<button type="button">'+escapeHtml(c)+'</button>').join('');
+    } else {
+      const hits = SUGGEST.filter(s=> norm(s).indexOf(q)!==-1).slice(0,12);
+      elSuggest.innerHTML = hits.map(c=>'<button type="button">'+escapeHtml(c)+'</button>').join('');
+    }
+    elSuggest.querySelectorAll('button').forEach(b=>{
+      b.addEventListener('click', ()=>{ addChip(b.textContent); elQ.focus(); });
+    });
+  }
+
+  // ---------- events ----------
+  let debounceTimer=null, lastBackspace=0;
+  elQ.addEventListener('input', ()=>{
+    state.input = elQ.value;
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(render, 200);
+  });
+  elQ.addEventListener('keydown', (e)=>{
+    if (e.key==='Enter'){ e.preventDefault(); addChip(elQ.value); return; }
+    if (e.key===' '){ e.preventDefault(); addChip(elQ.value); return; }
+    if (e.key==='Backspace' && elQ.value===''){
+      const now = Date.now();
+      if (now - lastBackspace < 450 && state.chips.length){
+        state.chips.pop(); lastBackspace = 0; render();
+      } else { lastBackspace = now; }
+      return;
+    }
+    if ((e.ctrlKey||e.metaKey) && (e.key==='a'||e.key==='A')){ e.preventDefault(); return; }
+    if (e.key==='Escape'){ elQ.value=''; state.input=''; render(); }
+  });
+  // Ctrl+A anywhere in searchbox prevented too
+  document.getElementById('searchbox').addEventListener('keydown', (e)=>{
+    if ((e.ctrlKey||e.metaKey) && (e.key==='a'||e.key==='A')) e.preventDefault();
+  });
+
+  document.getElementById('boolseg').addEventListener('click', (e)=>{
+    const b = e.target.closest('button'); if(!b) return;
+    state.bool = b.dataset.v;
+    document.querySelectorAll('#boolseg button').forEach(x=>x.classList.toggle('on', x===b));
+    render();
+  });
+  document.getElementById('strictseg').addEventListener('click', (e)=>{
+    const b = e.target.closest('button'); if(!b) return;
+    state.strict = (b.dataset.v === 'strict');
+    document.querySelectorAll('#strictseg button').forEach(x=>x.classList.toggle('on', x===b));
+    render();
+  });
+
+  // ---------- header ----------
+  (function initHeader(){
+    const c = DATA.meta.counts;
+    elSubtitle.textContent = '数据版本 '+DATA.meta.version+' · 生成 '+DATA.meta.generated;
+    elStats.innerHTML = [
+      ['商品变体', c.products], ['已确认', c.confirmed], ['待核实', c.pending],
+      ['外部未验证', c.external||0], ['排除/无液金', c.excluded], ['来源', c.sources]
+    ].map(x=>'<span class="stat">'+x[0]+' <b>'+x[1]+'</b></span>').join('');
+    elFooter.innerHTML = '判定口径：'+escapeHtml(DATA.meta.fuzzy_policy||'')+'<br>'
+      + '证据等级：'+Object.entries(DATA.meta.grades||{}).map(([k,v])=>k+'='+v).join('；');
+  })();
+
+  render();
+})();
+</script>
+</body>
+</html>
